@@ -297,6 +297,17 @@ $ docker run -d --name monarch-mcp --restart unless-stopped \
 Connect your MCP client to `http://127.0.0.1:8000/mcp` using Streamable HTTP.
 See [HTTP transport configuration](#http-transport-configuration) for all settings.
 
+The image runs in [read only mode](#strongest-option-read-only-mode) by default,
+because the HTTP transport does not authenticate callers. Anything that can
+reach the port would otherwise be able to call `monarch_logout`, or
+`monarch_login_with_token` to swap your saved session for another Monarch
+account. Login happens in the separate `login_setup.py` container above, so the
+running server never needs those tools.
+
+To allow writes, add `-e MONARCH_MCP_READ_ONLY=0`. That registers every
+mutating tool, including the login and logout tools, on the listening socket,
+so only do it where every client that can reach the port is trusted.
+
 ### Connect from another machine
 
 > [!WARNING]
@@ -766,7 +777,8 @@ tool that is not there.
 ```
 
 This leaves 30 of the 58 tools available, covering everything that reads.
-Read only is off by default, so existing setups are unaffected. Note that it
+Read only is off by default outside Docker, so existing setups are unaffected;
+the Docker image turns it on (see [Start the HTTP server](#start-the-http-server)). Note that it
 also removes the login and logout tools, since those change durable state, so
 authenticate with `login_setup.py` before enabling it.
 
