@@ -297,6 +297,17 @@ $ docker run -d --name monarch-mcp --restart unless-stopped \
 Connect your MCP client to `http://127.0.0.1:8000/mcp` using Streamable HTTP.
 See [HTTP transport configuration](#http-transport-configuration) for all settings.
 
+The image runs in [read only mode](#strongest-option-read-only-mode) by default,
+because the HTTP transport does not authenticate callers. Anything that can
+reach the port would otherwise be able to call `monarch_logout`, or
+`monarch_login_with_token` to swap your saved session for another Monarch
+account. Login happens in the separate `login_setup.py` container above, so the
+running server never needs those tools.
+
+To allow writes, add `-e MONARCH_MCP_READ_ONLY=0`. That registers every
+mutating tool, including the login and logout tools, on the listening socket,
+so only do it where every client that can reach the port is trusted.
+
 ### Connect from another machine
 
 > [!WARNING]
@@ -446,9 +457,10 @@ Merchant forecasts and liability bills can describe the same payment. The tool
 preserves both with their identities: it does not sum, deduplicate, or substitute
 forecast amounts for unknown statement balances.
 
-Reads are paginated (`limit=100`, `offset=0` by default). For completeness checks,
-use `include_metadata=True` to opt into the standard envelope (`data`, `args`,
-`count`, `total_count`, `truncated`, `tool`, `search`):
+With `limit` omitted, the tool reads every page itself and returns the complete
+range, so the default list is the whole month. Pass `limit` to read a single page
+instead, and use `include_metadata=True` to opt into the standard envelope
+(`data`, `args`, `count`, `total_count`, `truncated`, `tool`, `search`):
 
 ```python
 get_recurring_transactions(
@@ -457,13 +469,14 @@ get_recurring_transactions(
 )
 ```
 
-The API supplies no total, so `total_count` is null and a full page is
-conservatively marked `truncated=True` (more rows may exist). Keep the dates and
-filters fixed, advance `offset` by `count`, and continue until `truncated=False`.
-An exactly full final page requires one more request, which may return an empty
-page. The legacy list has no pagination metadata; do not assume one list is the
-complete month. Synced bills require bill sync to be available and configured
-in Monarch; the tool does not enable it or refresh institutions.
+The API supplies no total, so `total_count` is null. With an explicit `limit`, a
+full page is conservatively marked `truncated=True` (more rows may exist). Keep
+the dates and filters fixed, advance `offset` by `count`, and continue until
+`truncated=False`. An exactly full final page requires one more request, which
+may return an empty page.
+
+Synced bills require bill sync to be available and configured in Monarch; the
+tool does not enable it or refresh institutions.
 
 ### 🔄 Merchant & Recurring Stream Management
 - **Get Merchant**: View a merchant's details including recurring transaction stream configuration
@@ -766,7 +779,8 @@ tool that is not there.
 ```
 
 This leaves 30 of the 58 tools available, covering everything that reads.
-Read only is off by default, so existing setups are unaffected. Note that it
+Read only is off by default outside Docker, so existing setups are unaffected;
+the Docker image turns it on (see [Start the HTTP server](#start-the-http-server)). Note that it
 also removes the login and logout tools, since those change durable state, so
 authenticate with `login_setup.py` before enabling it.
 
