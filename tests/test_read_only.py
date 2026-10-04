@@ -281,6 +281,13 @@ class TestDockerDefault:
 
         env = {**os.environ, read_only.ENV_VAR: self._dockerfile_env()[read_only.ENV_VAR]}
         env["HOME"] = str(tmp_path)
+        # conftest's keyring isolation only covers this process, and importing
+        # the app in the subprocess constructs SecureMonarchSession at module
+        # scope, which probes the keyring. With HOME pointed at an empty temp
+        # dir, macOS finds no login keychain there and prompts the developer to
+        # create or reset one, which also hangs an unattended run. Pin a null
+        # backend so the probe never reaches a real keychain.
+        env["PYTHON_KEYRING_BACKEND"] = "keyring.backends.null.Keyring"
         script = (
             "import asyncio\n"
             "from monarch_mcp_server.app import mcp\n"
