@@ -31,6 +31,27 @@ read_only.install(mcp)
 # Import tools package to trigger @mcp.tool() registration
 import monarch_mcp_server.tools  # noqa: E402, F401
 
+# Starlette redirects /mcp/ to /mcp at routing time, before the endpoint and so
+# before the Host check, and it builds the Location header from the request's
+# own Host. A request with Host: evil.example therefore got a 307 to
+# http://evil.example/mcp, and a 307 preserves the method and body, which here
+# means tool arguments. Behind the reverse proxy the README recommends, which
+# passes the public Host through, a client configured with a trailing slash
+# would resend its body to an attacker chosen host.
+#
+# mcp.run() builds the Starlette app internally, so the builder is wrapped
+# rather than the run path, which leaves the transport selection untouched.
+_build_streamable_http_app = mcp.streamable_http_app
+
+
+def _streamable_http_app_without_slash_redirect():  # type: ignore[no-untyped-def]
+    http_app = _build_streamable_http_app()
+    http_app.router.redirect_slashes = False
+    return http_app
+
+
+mcp.streamable_http_app = _streamable_http_app_without_slash_redirect
+
 # Export for `mcp run`
 app = mcp
 
