@@ -109,3 +109,25 @@ class TestBulkUpdateBusinessEntity:
         )
 
         assert data["updates"] == {"businessEntityId": None}
+
+
+class TestSetBusinessEntityRequiresAValue:
+    """A setter must not wipe the field when the value is forgotten.
+
+    bulk_update_transactions leaves businessEntityId untouched when the
+    argument is omitted, so the single tool matches that: only the literal
+    "none" clears.
+    """
+
+    @patch("monarch_mcp_server.tools.business.get_monarch_client")
+    async def test_blank_is_refused_without_writing(self, mock_get_client):
+        mock_client = AsyncMock()
+        mock_get_client.return_value = mock_client
+
+        result = json.loads(
+            await set_business_entity(transaction_id="txn_1", business_entity_id="   ")
+        )
+
+        assert result["error"] is True
+        assert "business_entity_id" in result["message"]
+        mock_client.gql_call.assert_not_called()

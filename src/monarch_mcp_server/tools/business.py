@@ -74,24 +74,34 @@ async def get_business_entities() -> str:
 @mcp.tool()
 async def set_business_entity(
     transaction_id: str,
-    business_entity_id: Optional[str] = None,
+    business_entity_id: str,
 ) -> str:
     """
     Set (or clear) the business entity on one transaction.
 
     Args:
         transaction_id: The transaction to update
-        business_entity_id: Business id from get_business_entities, or
-            omit / pass "none" to clear it (mark as personal)
+        business_entity_id: Business id from get_business_entities, or the
+            literal "none" to clear it (mark as personal). Required: a setter
+            that wipes the field when the value is forgotten is the wrong
+            default, and it is also what bulk_update_transactions does, where
+            omitting the argument leaves the field untouched.
 
     Returns:
         The transaction id and its business entity after the write, read
         back from the mutation response.
     """
     try:
-        value = None
-        if business_entity_id and business_entity_id.strip().lower() != "none":
-            value = business_entity_id
+        if not business_entity_id.strip():
+            raise ValueError(
+                'business_entity_id must not be blank. Pass a business id, '
+                'or "none" to clear it.'
+            )
+        value = (
+            None
+            if business_entity_id.strip().lower() == "none"
+            else business_entity_id
+        )
         client = await get_monarch_client()
         result = await client.gql_call(
             operation="Common_SetTransactionBusinessEntity",
