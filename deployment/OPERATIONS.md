@@ -53,3 +53,7 @@ Recovery testing must restore a protected synthetic or real session in a separat
 ## Scheduler boundary
 
 The connector provides tools; it does not schedule AI reviews. Desktop automations require the Mac, and cannot meet the sleeping-Mac acceptance test. Verify a hosted ChatGPT/Work scheduler can invoke this private connector, or obtain approval for a separate Apollo runner and API usage budget. Do not start background API spending from this deployment script. Daily exceptions, weekly digest and monthly planning remain the proposed cadence until Craig chooses times and thresholds.
+
+## Runtime key lifecycle
+
+The initial dedicated key is restricted to Tunnels Read and Use, with every model and data permission set to None. Its proposed setup expiry is 30 days. This limits the credential to the connector transport; it is not a budget for an AI review runner. Before expiry, Craig creates a replacement with the same narrow permissions, supplies it through a masked local prompt, and restarts only the finance container. Verify readiness and one client read before revoking the old key. Calendar maintenance and automatic replacement have not been configured.
