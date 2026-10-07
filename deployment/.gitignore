@@ -1,0 +1,5 @@
+config/
+secrets/
+session/
+tunnel.yaml
+*.key

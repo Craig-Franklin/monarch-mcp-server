@@ -1,0 +1,21 @@
+# Build the connector image from the same commit using the root Dockerfile first.
+ARG CONNECTOR_IMAGE
+FROM debian:trixie-slim AS tunnel-download
+ARG TUNNEL_VERSION=0.0.16
+ARG TUNNEL_SHA256=d60cdba019bce451bcc3a15478cc5b9cb11270b049f5b56ea39a80b517f8b117
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl --fail --location --retry 3 \
+       "https://github.com/openai/tunnel-client/releases/download/v${TUNNEL_VERSION}/tunnel-client-v${TUNNEL_VERSION}-linux-amd64.zip" -o /tmp/tunnel.zip \
+    && printf '%s  /tmp/tunnel.zip\n' "$TUNNEL_SHA256" | sha256sum --check --strict - \
+    && mkdir /tunnel && unzip -q /tmp/tunnel.zip -d /tunnel \
+    && chmod 0555 /tunnel/tunnel-client /tunnel/cloudflared
+FROM ${CONNECTOR_IMAGE}
+COPY --from=tunnel-download /tunnel /opt/tunnel-client
+# Stdio exposes no Monarch HTTP endpoint. Full tools are enabled only at launch
+# after tunnel/workspace isolation is checked; the base stays read-only by default.
+ENV MONARCH_MCP_TRANSPORT=stdio
+ENTRYPOINT ["/opt/tunnel-client/tunnel-client"]
+CMD ["run", "--config", "/config/tunnel.yaml"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/readyz', timeout=4)"
