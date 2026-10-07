@@ -52,8 +52,12 @@ Recovery testing must restore a protected synthetic or real session in a separat
 
 ## Scheduler boundary
 
-The connector provides tools; it does not schedule AI reviews. Desktop automations require the Mac, and cannot meet the sleeping-Mac acceptance test. Verify a hosted ChatGPT/Work scheduler can invoke this private connector, or obtain approval for a separate Apollo runner and API usage budget. Do not start background API spending from this deployment script. Daily exceptions, weekly digest and monthly planning remain the proposed cadence until Craig chooses times and thresholds.
+The connector provides tools; it does not schedule AI reviews. Desktop automations require the Mac, and cannot meet the sleeping-Mac acceptance test. Use only a hosted scheduler included in Craig’s existing ChatGPT subscription, and verify that it can invoke this private connector. A separate Apollo API inference runner and any additional spend are excluded. Do not purchase credits, add payment details, enable model API billing or use a paid automation service. If the included scheduler cannot use this connector, record that limitation and assess a supported route at no additional cost. Daily exceptions, weekly digest and monthly planning remain the proposed cadence until Craig chooses times and thresholds.
 
 ## Runtime key lifecycle
 
 The initial dedicated key is restricted to Tunnels Read and Use, with every model and data permission set to None. Its proposed setup expiry is 30 days. This limits the credential to the connector transport; it is not a budget for an AI review runner. Before expiry, Craig creates a replacement with the same narrow permissions, supplies it through a masked local prompt, and restarts only the finance container. Verify readiness and one client read before revoking the old key. Calendar maintenance and automatic replacement have not been configured.
+
+## Zero additional spend
+
+Craig requires no additional spending beyond his existing ChatGPT subscription. Live Platform inspection on October 7 showed Free trial, $0.00 remaining credit, no billing plan, no invoices, $0.00 October spend, zero tokens and requests. The harmless tunnel reached readiness without a billing plan or purchased credits. This is current-account evidence; official documentation did not provide an explicit future-free tunnel pricing guarantee. Leave billing disabled. Stop the route if payment becomes required. A transport-only key does not itself prove pricing.
