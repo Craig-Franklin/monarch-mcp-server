@@ -4,7 +4,7 @@ Status: prepared configuration. A running service, authenticated session, remote
 
 ## Access boundary
 
-Use OpenAI Secure MCP Tunnel with a stdio child inside the same container. Publish no ports. The private Docker bridge permits outbound HTTPS for the tunnel and Monarch, but has no connection to other household containers. The health/admin listener binds only to 127.0.0.1 inside the container.
+Use OpenAI Secure MCP Tunnel with a stdio child inside the same container. Publish no ports. The dedicated Docker bridge does not join other household container networks. It permits outbound access for the tunnel and Monarch; Docker’s bridge alone is not a destination firewall for the rest of the LAN. The health/admin listener binds only to 127.0.0.1 inside the container.
 
 The Monarch server has no separate OAuth user identity. All authorized tunnel callers share Craig’s Monarch session. Only Craig’s personal Platform organization and intended ChatGPT workspace should be associated with the tunnel. Review membership before adding real credentials. Tunnel authorization and Monarch sign-in are separate; stdio removes the raw unauthenticated HTTP listener. If multiple users must be supported, add an authenticated per-user gateway before expanding access.
 
