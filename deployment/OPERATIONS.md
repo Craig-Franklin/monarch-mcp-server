@@ -61,3 +61,7 @@ The initial dedicated key is restricted to Tunnels Read and Use, with every mode
 ## Zero additional spend
 
 Craig requires no additional spending beyond his existing ChatGPT subscription. Live Platform inspection on October 7 showed Free trial, $0.00 remaining credit, no billing plan, no invoices, $0.00 October spend, zero tokens and requests. The harmless tunnel reached readiness without a billing plan or purchased credits. This is current-account evidence; official documentation did not provide an explicit future-free tunnel pricing guarantee. Leave billing disabled. Stop the route if payment becomes required. A transport-only key does not itself prove pricing.
+
+## Disposable container cleanup
+
+After acceptance, remove only exact stopped task-owned preflight/login containers after inspecting their names, state and mounts. Do not use broad prune or remove images, bind mounts, credentials or production networks. On October 7, both `monarch-tunnel-preflight` and `monarch-tunnel-preflight-first-attempt` were removed. Production remained healthy with readiness HTTP 200; the only remaining new container is `monarch-private`. Both tested Monarch image tags, active session/key/config and the dedicated network are retained. No login/helper container or temporary cookie file remained.
