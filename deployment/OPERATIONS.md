@@ -1,6 +1,6 @@
 # Apollo deployment and recovery
 
-Status: prepared configuration. A running service, authenticated session, remote client use and unattended reviews must be verified before completion.
+Status: deployed October 7, 2026. Production is healthy with a persistent session, all 61 registered tools, successful ChatGPT web reads and one approved category correction. A one-time ChatGPT cloud task completed actual read-only connector calls and is paused. Craig deferred new recurring reviews. Desktop/mobile and physical sleeping-Mac/notification checks are still unverified.
 
 ## Access boundary
 
@@ -24,9 +24,9 @@ Use real source commit values. Record the final image ID, base image digest, bui
 
 Apollo’s appdata is cache-only and is not encrypted. Parent mode 0777 must not be inherited by the finance directory. Create a finance parent at mode 0700; `session`, `config`, and `secrets` at mode 0700 owned by uid/gid 10001. Put the runtime key only in `secrets/openai-runtime-key` (0600, uid 10001) and the nonsecret configuration in `config/tunnel.yaml`. The example file contains a placeholder tunnel ID and must be completed locally. Avoid keys in environment variables, shell history or command arguments.
 
-Choose the protection policy before real sign-in. Permissions protect ordinary users but not Apollo root or Docker administrators. Options include a dedicated encrypted dataset with separately retained recovery key or explicit acceptance of existing unencrypted storage. Do not claim this system has encrypted credentials. Do not back up sessions into ordinary appdata archives until the backup protection policy is chosen. Reauthentication instead of copying sessions is a viable recovery policy.
+Craig accepted restricted storage on the existing unencrypted dataset. Permissions protect ordinary users but not Apollo root or Docker administrators. Current recovery policy: retain nonsecret source/templates in the fork; do not copy session or runtime-key files into ordinary archives. Reauthenticate Monarch and rotate a tunnel-only runtime key after loss. No protected secret backup or isolated disaster restore has been configured or tested. Before enabling any general appdata backup, explicitly exclude session and secret directories or choose a protected encrypted backup destination. Do not claim encrypted credential storage.
 
-Authenticate with a separate interactive container using the connector image and session mount. Craig enters his own password/MFA. Do not extract browser cookies automatically or paste secrets into chat. Browser-cookie sign-in is an upstream-supported fallback that Craig can choose if password sign-in hits CAPTCHA. Do not store cookie exports in the repository or build context.
+Authenticate with a separate interactive container using the connector image and session mount. Craig enters password/MFA when required. Browser-cookie sign-in is an upstream-supported fallback; the approved setup used the documented browser network interface and masked local input, without exposing the cookie value. Temporary export was removed after session save. Never extract OS browser-profile stores or put passwords, cookies or session values in chat, repository, build context or images.
 
 ## Start and prove readiness
 
@@ -52,7 +52,7 @@ Recovery testing must restore a protected synthetic or real session in a separat
 
 ## Scheduler boundary
 
-The connector provides tools; it does not schedule AI reviews. Desktop automations require the Mac, and cannot meet the sleeping-Mac acceptance test. Use only a hosted scheduler included in Craig’s existing ChatGPT subscription, and verify that it can invoke this private connector. A separate Apollo API inference runner and any additional spend are excluded. Do not purchase credits, add payment details, enable model API billing or use a paid automation service. If the included scheduler cannot use this connector, record that limitation and assess a supported route at no additional cost. Daily exceptions, weekly digest and monthly planning remain the proposed cadence until Craig chooses times and thresholds.
+The connector provides tools; it does not schedule AI reviews. Desktop automations require the Mac, and cannot meet the sleeping-Mac acceptance test. Use only a hosted scheduler included in Craig’s existing ChatGPT subscription, and verify that it can invoke this private connector. A separate Apollo API inference runner and any additional spend are excluded. Do not purchase credits, add payment details, enable model API billing or use a paid automation service. If the included scheduler cannot use this connector, record that limitation and assess a supported route at no additional cost. Craig chose to finish setup without new recurring reviews. Daily exceptions, weekly digest and monthly planning prompts are prepared for a later decision. The one-time cloud connection test is paused; the pre-existing Weekly finances update remains unchanged. Cloud-source runtime and real connector reads passed while the Mac remained awake. A physical asleep run and notification delivery were not tested.
 
 ## Runtime key lifecycle
 
