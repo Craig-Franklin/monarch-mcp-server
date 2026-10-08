@@ -1,0 +1,19 @@
+config_version: 1
+control_plane:
+  base_url: https://api.openai.com
+  tunnel_id: REPLACE_WITH_CREATED_TUNNEL_ID
+  api_key: file:/run/secrets/openai-runtime-key
+health:
+  listen_addr: 127.0.0.1:8080
+admin_ui:
+  open_browser: false
+  log_buffer_events: 100
+log:
+  level: warn
+  format: json
+mcp:
+  commands:
+    - channel: main
+      command: monarch-mcp-server --transport stdio
+  max_concurrent_requests: 1
+  stdio_send_initialized_notification: true

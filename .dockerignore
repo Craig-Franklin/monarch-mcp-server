@@ -21,3 +21,5 @@
 **/*.pickle
 **/*.session
 **/.monarch-mcp-server
+!deployment/
+!deployment/Dockerfile.tunnel
